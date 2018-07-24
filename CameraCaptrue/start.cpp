@@ -7,23 +7,23 @@ using namespace cv;
 
 void sharpen(const Mat &image, Mat &result) 
 {
-	// ÅĞ¶ÏÊÇ·ñĞèÒª·ÖÅäÍ¼ÏñÊı¾İ¡£ Èç¹ûĞèÒª£¬ ¾Í·ÖÅä
+	// åˆ¤æ–­æ˜¯å¦éœ€è¦åˆ†é…å›¾åƒæ•°æ®ã€‚ å¦‚æœéœ€è¦ï¼Œ å°±åˆ†é…
 	result.create(image.size(), image.type());
-	int nchannels = image.channels(); // »ñµÃÍ¨µÀÊı
-									  // ´¦ÀíËùÓĞĞĞ£¨³ıÁËµÚÒ»ĞĞºÍ×îºóÒ»ĞĞ£©
+	int nchannels = image.channels(); // è·å¾—é€šé“æ•°
+									  // å¤„ç†æ‰€æœ‰è¡Œï¼ˆé™¤äº†ç¬¬ä¸€è¡Œå’Œæœ€åä¸€è¡Œï¼‰
 	for (int j = 1; j < image.rows - 1; j++) {
 		const uchar* previous =
-			image.ptr<const uchar>(j - 1); // ÉÏÒ»ĞĞ
+			image.ptr<const uchar>(j - 1); // ä¸Šä¸€è¡Œ
 		const uchar* current =
-			image.ptr<const uchar>(j); // µ±Ç°ĞĞ
+			image.ptr<const uchar>(j); // å½“å‰è¡Œ
 		const uchar* next =
-			image.ptr<const uchar>(j + 1); // ÏÂÒ»ĞĞ
-		uchar* output = result.ptr<uchar>(j); // Êä³öĞĞ
+			image.ptr<const uchar>(j + 1); // ä¸‹ä¸€è¡Œ
+		uchar* output = result.ptr<uchar>(j); // è¾“å‡ºè¡Œ
 		for (int i = nchannels; i < (image.cols - 1)*nchannels; i++) {
 			*output++ = cv::saturate_cast<uchar>(5 * current[i] - 1 * current[i - nchannels] -
 				1 * current[i + nchannels] - 1 * previous[i] - 1*next[i]);
-		}  //À­ÆÕÀ­Ë¹Ëã×Ó
-	} // °ÑÎ´´¦ÀíµÄÏñËØÉèÎª0
+		}  //æ‹‰æ™®æ‹‰æ–¯ç®—å­
+	} // æŠŠæœªå¤„ç†çš„åƒç´ è®¾ä¸º0
 	result.row(0).setTo(cv::Scalar(0));
 	result.row(result.rows - 1).setTo(cv::Scalar(0));
 	result.col(0).setTo(cv::Scalar(0));
@@ -33,13 +33,13 @@ void sharpen(const Mat &image, Mat &result)
 void salt(cv::Mat image, int n) {
 	int i, j;
 	for (int k = 0; k<n; k++) {
-		// rand()ÊÇËæ»úÊıÉú³ÉÆ÷
+		// rand()æ˜¯éšæœºæ•°ç”Ÿæˆå™¨
 		i = std::rand() % image.cols;
 		j = std::rand() % image.rows;
-		if (image.type() == CV_8UC1) { // »Ò¶ÈÍ¼Ïñ
+		if (image.type() == CV_8UC1) { // ç°åº¦å›¾åƒ
 			image.at<uchar>(j, i) = 255;
 		}
-		else if (image.type() == CV_8UC3) { // ²ÊÉ«Í¼Ïñ
+		else if (image.type() == CV_8UC3) { // å½©è‰²å›¾åƒ
 			image.at<cv::Vec3b>(j, i)[0] = 255;
 			image.at<cv::Vec3b>(j, i)[1] = 255;
 			image.at<cv::Vec3b>(j, i)[2] = 255;
@@ -58,27 +58,27 @@ void colorreduce1(Mat image, int n)
 		uchar *data = image.ptr<uchar>(j);
 		for (int i = 0; i < nc; i++)
 		{
-			*data &= mask; // ÑÚÂë
-			*data++ += div >> 1; // ¼ÓÉÏdiv/2
+			*data &= mask; // æ©ç 
+			*data++ += div >> 1; // åŠ ä¸Šdiv/2
 								 //data[i] = data[i] / div*div + div / 2;
 		}
 	}
 }
 
 void wave(const Mat &image, Mat &result) {
-	// Ó³Éä²ÎÊı
+	// æ˜ å°„å‚æ•°
 	Mat srcX(image.rows, image.cols, CV_32F);
 	Mat srcY(image.rows, image.cols, CV_32F);
-	// ´´½¨Ó³Éä²ÎÊı
+	// åˆ›å»ºæ˜ å°„å‚æ•°
 	for (int i = 0; i<image.rows; i++) {
 		for (int j = 0; j<image.cols; j++) {
-			// (i,j)ÏñËØµÄĞÂÎ»ÖÃ
-			srcX.at<float>(i, j) = j; // ±£³ÖÔÚÍ¬Ò»ÁĞ
-									  // Ô­À´ÔÚµÚiĞĞµÄÏñËØ£¬ ÏÖÔÚ¸ù¾İÒ»¸öÕıÏÒÇúÏßÒÆ¶¯
+			// (i,j)åƒç´ çš„æ–°ä½ç½®
+			srcX.at<float>(i, j) = j; // ä¿æŒåœ¨åŒä¸€åˆ—
+									  // åŸæ¥åœ¨ç¬¬iè¡Œçš„åƒç´ ï¼Œ ç°åœ¨æ ¹æ®ä¸€ä¸ªæ­£å¼¦æ›²çº¿ç§»åŠ¨
 			srcY.at<float>(i, j) = i + 5 * sin(j / 10.0);
 		}
 	}
-	// Ó¦ÓÃÓ³Éä²ÎÊı
+	// åº”ç”¨æ˜ å°„å‚æ•°
 	remap(image, result, srcX, srcY, cv::INTER_LINEAR);
 }
 
@@ -94,21 +94,21 @@ void FrameProcess(Mat ori, Mat &output)
 int main()
 {
 	VideoCapture cap;
-	cap.open(1);
+	cap.open(1);  //open the USB camera(the second camera)
 	Mat output;
 	Mat ori, res;
-	//cap.set(CV_CAP_PROP_FRAME_WIDTH, 900);//¿í¶È 
-	//cap.set(CV_CAP_PROP_FRAME_HEIGHT, 1600);//¸ß¶È
-	//cap.set(CV_CAP_PROP_BRIGHTNESS, 10);	//ÁÁ¶È 1
+	//cap.set(CV_CAP_PROP_FRAME_WIDTH, 900);//å®½åº¦ 
+	//cap.set(CV_CAP_PROP_FRAME_HEIGHT, 1600);//é«˜åº¦
+	//cap.set(CV_CAP_PROP_BRIGHTNESS, 10);	//äº®åº¦ 1
 	//cap.set(CV_CAP_PROP_EXPOSURE,-6);
 	//cap.set(CV_CAP_PROP_FPS, 25);
 	//cap.set(CV_CAP_PROP_SATURATION,70);
 	while (1)
 	{
 		
-		cap.read(ori);	//µÈ¼ÛÓÚcap.read(frame);
-       // Canny(frame, frame, 30, 100);//canny±ßÔµ¼ì²â£¬È¥µôÕâÒ»ĞĞ¾ÍÊÇ´¿´âµÄ¶ÁÈ¡ÉãÏñÍ·ÁË
-	    //cvtColor(frame, frame, CV_BGR2HSV);//BGR¿Õ¼ä×ªÎªHSVÑÕÉ«¿Õ¼ä£¬×¢Òâ£¬Á½Õß²»ÄÜÍ¬Ê±¶ÔÍ¬Ò»ÕÅÍ¼Æ¬£¨ÔÚ´ËÎªframe£©½øĞĞ´¦Àí£¬·ñÔò±¨´í
+		cap.read(ori);	//ç­‰ä»·äºcap.read(frame);
+       // Canny(frame, frame, 30, 100);//cannyè¾¹ç¼˜æ£€æµ‹ï¼Œå»æ‰è¿™ä¸€è¡Œå°±æ˜¯çº¯ç²¹çš„è¯»å–æ‘„åƒå¤´äº†
+	    //cvtColor(frame, frame, CV_BGR2HSV);//BGRç©ºé—´è½¬ä¸ºHSVé¢œè‰²ç©ºé—´ï¼Œæ³¨æ„ï¼Œä¸¤è€…ä¸èƒ½åŒæ—¶å¯¹åŒä¸€å¼ å›¾ç‰‡ï¼ˆåœ¨æ­¤ä¸ºframeï¼‰è¿›è¡Œå¤„ç†ï¼Œå¦åˆ™æŠ¥é”™
 		//if (ori.empty())
 			//cout << "Empty" << endl; break;
 		//cout << cap.get(CV_CAP_PROP_EXPOSURE) << endl;
@@ -117,12 +117,12 @@ int main()
 		//cout << cap.get(CV_CAP_PROP_SATURATION) << endl;
 		FrameProcess(ori, output);
 		imshow("video", output);
-		if (waitKey(20)>0)//°´ÏÂÈÎÒâ¼üÍË³öÉãÏñÍ·¡¡¡¡ÒòµçÄÔ»·¾³¶øÒì£¬ÓĞµÄµçÄÔ¿ÉÄÜ»á³öÏÖÒ»ÉÁ¶ø¹ıµÄÇé¿ö
+		if (waitKey(20)>0)//æŒ‰ä¸‹ä»»æ„é”®é€€å‡ºæ‘„åƒå¤´ã€€ã€€å› ç”µè„‘ç¯å¢ƒè€Œå¼‚ï¼Œæœ‰çš„ç”µè„‘å¯èƒ½ä¼šå‡ºç°ä¸€é—ªè€Œè¿‡çš„æƒ…å†µ
 			  break;
 	}
 	
 	cap.release();
-	destroyAllWindows();//¹Ø±ÕËùÓĞ´°¿Ú
+	destroyAllWindows();//å…³é—­æ‰€æœ‰çª—å£
 	//waitKey(30);
 	return 0;
 }
