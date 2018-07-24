@@ -94,7 +94,7 @@ void FrameProcess(Mat ori, Mat &output)
 int main()
 {
 	VideoCapture cap;
-	cap.open(1);  //open the USB camera(the second camera)
+	cap.open(1);  //open the USB camera(the second camera)，如果要用笔记本自带摄像头就改成0
 	Mat output;
 	Mat ori, res;
 	//cap.set(CV_CAP_PROP_FRAME_WIDTH, 900);//宽度 
